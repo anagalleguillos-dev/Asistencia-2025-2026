@@ -137,7 +137,7 @@ select.ctl:hover{border-color:var(--accent);}
 .section__hint{font-size:12px; color:var(--ink-mute);}
 
 /* ---------- Cards / KPIs ---------- */
-.cards{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+.cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px;}
 .card{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
   padding:16px 18px; box-shadow:var(--shadow);
@@ -226,11 +226,9 @@ td.hm.crit{background:var(--crit-bg); color:var(--crit);}
 
 /* ---------- Responsive ---------- */
 @media (max-width:880px){
-  .cards{grid-template-columns:repeat(2,1fr);}
   .extremos{grid-template-columns:1fr;}
 }
 @media (max-width:560px){
-  .cards{grid-template-columns:1fr 1fr;}
   .app{padding:18px 14px 60px;}
   .h1{font-size:19px;}
   table.tbl{font-size:12px;}
@@ -631,12 +629,15 @@ function renderMatriculaCards(scope){
   root.innerHTML = '';
   const s = scope.obj.series[String(state.periodo)];
 
-  const items = [
-    {label:'Matrícula total', value: s ? fmtInt(s.matricula) : '—', accent:true},
+  const items = [];
+  if(scope.type === 'establecimiento'){
+    items.push({label:'Matrícula total', value: s ? fmtInt(s.matricula) : '—', accent:true});
+  }
+  items.push(
     {label:'Ingresos del mes', value: s && s.ingresos!==null ? '+'+fmtInt(s.ingresos) : '—', cls: s && s.ingresos ? 'pos': ''},
     {label:'Retiros del mes', value: s && s.retiros!==null ? '−'+fmtInt(s.retiros) : '—', cls: s && s.retiros ? 'neg': ''},
     {label:'Transferencias internas', value: s ? fmtInt(s.atipicos) : '—', sub:'matrícula compartida con otro establecimiento SLEP — detalle en sección 2'},
-  ];
+  );
   items.forEach((it,i)=>{
     const c = document.createElement('div');
     c.className = 'card' + (it.accent?' card--accent':'');
